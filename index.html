@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Открытка для Айши</title>
+  <meta name="description" content="сайт‑открытка" />
+  <meta property="og:title" content="Для тебя ✨" />
+  <meta property="og:description" content="💌" />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#111827" />
+  <style>
+    :root {
+      --bg1: #0f172a; 
+      --bg2: #1e293b; 
+      --card: #111827; 
+      --paper: #f8fafc; 
+      --text: #0f172a; 
+      --accent: #eab308; 
+      --accent-2: #8b5cf6;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      color: #e5e7eb;
+      background: radial-gradient(1200px 1200px at 10% 10%, var(--bg2), transparent 60%),
+                  radial-gradient(1200px 1200px at 90% 0%, #0b1022, transparent 60%),
+                  linear-gradient(160deg, var(--bg1), #0b1022 60%);
+      min-height: 100%;
+      display: grid;
+      place-items: center;
+      overflow-x: hidden;
+    }
+
+    .stars { position: fixed; inset: 0; pointer-events: none; }
+    .stars span { position: absolute; width: 3px; height: 3px; background: #fff8; border-radius: 50%; filter: blur(.5px); animation: float 12s linear infinite; }
+    @keyframes float { to { transform: translateY(-120vh) rotate(360deg); opacity: .2; } }
+
+    .wrap { position: relative; width: min(960px, 92vw); padding: 24px; }
+
+    .toolbar {
+      display: flex; gap: 10px; justify-content: center; margin-bottom: 18px;
+    }
+    .btn {
+      background: #ffffff12; color: #e5e7eb; border: 1px solid #94a3b844;
+      padding: 10px 14px; border-radius: 14px; cursor: pointer; backdrop-filter: blur(6px);
+      transition: transform .12s ease, background .2s ease, border-color .2s ease;
+    }
+    .btn:hover { transform: translateY(-1px); background: #ffffff1f; border-color: #94a3b888; }
+
+    .scene { perspective: 1400px; }
+    .card {
+      position: relative; width: min(760px, 100%); height: 460px; margin: 0 auto;
+      transform-style: preserve-3d; transition: transform 1s cubic-bezier(.2,.7,.1,1);
+    }
+    .card.open { transform: rotateX(12deg) rotateY(0deg) translateY(-6px); }
+
+    .cover, .inside {
+      position: absolute; inset: 0; border-radius: 22px; overflow: hidden; transform-origin: left center; backface-visibility: hidden;
+      box-shadow: 0 40px 80px #0009, inset 0 0 0 1px #ffffff14;
+    }
+    .cover {
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+      display: grid; place-items: center; transform: rotateY(0deg);
+    }
+    .cover .title {
+      font-size: clamp(28px, 5vw, 44px); font-weight: 800; letter-spacing: .5px; color: #fff; text-align: center;
+      text-shadow: 0 6px 24px #0006;
+    }
+    .cover .ribbon { position: absolute; top: 18px; right: -40px; transform: rotate(35deg); }
+    .ribbon span { background: #00000055; color: #fff; padding: 6px 40px; border: 1px solid #ffffff2a; border-radius: 999px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; }
+
+    .inside {
+      background: linear-gradient(180deg, #ffffff, #f4f6f9); transform: rotateY(-180deg);
+      display: grid; grid-template-columns: 1.15fr .85fr; gap: 0; color: var(--text);
+    }
+
+    .paper {
+      padding: clamp(18px, 3.5vw, 32px); position: relative; background: var(--paper);
+    }
+    .paper h2 { margin: 0 0 12px; font-size: clamp(20px, 3vw, 28px); }
+    .paper p { margin: 8px 0; line-height: 1.6; }
+    .paper .sign { margin-top: 18px; font-style: italic; opacity: .8; }
+
+    .photo {
+      position: relative; background: #000; overflow: hidden;
+      display: grid; place-items: center;
+    }
+    .photo img { width: 100%; height: 100%; object-fit: cover; }
+    .photo .overlay {
+      position: absolute; inset: 0; background: linear-gradient(180deg, #0000, #0008 70%);
+    }
+    .photo .caption { position: absolute; bottom: 14px; left: 14px; right: 14px; color: #fff; text-shadow: 0 2px 10px #000a; }
+
+    .card.revealed .cover { transform: rotateY(-180deg); }
+    .card.revealed .inside { transform: rotateY(0deg); }
+
+    #confetti { position: fixed; inset: 0; pointer-events: none; }
+
+    footer { margin-top: 18px; text-align: center; opacity: .7; font-size: 12px; }
+
+    @media (max-width: 720px) {
+      .inside { grid-template-columns: 1fr; }
+      .card { height: auto; }
+      .cover, .inside { min-height: 520px; }
+    }
+
+    .light {
+      background: radial-gradient(1200px 1200px at 10% 10%, #dbeafe, transparent 60%),
+                  radial-gradient(1200px 1200px at 90% 0%, #fef3c7, transparent 60%),
+                  linear-gradient(160deg, #f8fafc, #e5e7eb 60%);
+      color: #111827;
+    }
+  </style>
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+
+  <canvas id="confetti" aria-hidden="true"></canvas>
+
+  <audio id="bgm" hidden loop preload="auto">
+    <source src="./musics/music.mp3" type="audio/mpeg" />
+    <source src="music.ogg" type="audio/ogg" />
+  </audio>
+
+  <div class="wrap">
+    <div class="toolbar">
+      <button class="btn" id="openBtn">💌 Открыть</button>
+      <button class="btn" id="musicBtn" aria-label="Музыка">🎵 Музыка</button>
+    </div>
+
+    <div class="scene">
+      <section class="card" id="card" aria-label="Открытка">
+        <div class="cover">
+          <div class="ribbon"><span>Amour • 143</span></div>
+          <h1 class="title">Для тебя, Айша ✨</h1>
+        </div>
+
+        <div class="inside">
+          <div class="paper">
+            <h2>С днём рождения, Айша!</h2>
+            <p>
+              Последние время я не уделял время которое должен был бы.
+              Это моя вина, я просто хочу стать тем кто заслуживает быть с тобой. 
+              За весь этот год я не усомнился о своих чувствах. 
+              Если у тебя появлялись мысли о том что я не хочу с тобой общаться, то пожалуйста не думай так. 
+              Я очень хочу днями проводить время с тобой, хотя бы в интернете. Потому что мне правда очень приятно с тобой. 
+              Если ты хочешь поговорить об этом снова, более глубже то ты знаешь куда писать. Извини если нагрузил тебя в такой день. 
+              Ещё раз с днем рождения ❤️
+            </p>
+            <p class="sign">С любовью, Амир </p>
+            <p style="margin-top:16px;font-size:13px;opacity:.7"></p>
+          </div>
+          <figure class="photo">
+            <img src="./images/image.jpg" >
+            <div class="overlay"></div>
+            <figcaption class="caption">Si l'amour avait un visage, ce serait le tien. Si le bonheur avait une voix, ce serait la tienne. Et si la vie avait un sens, ce serait toi :3</figcaption>
+          </figure>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      Сделано с ❤
+    </footer>
+  </div>
+
+  <script>
+    const stars = document.querySelector('.stars');
+    for (let i = 0; i < 70; i++) {
+      const s = document.createElement('span');
+      const left = Math.random() * 100;
+      const delay = Math.random() * 12;
+      const dur = 8 + Math.random() * 10;
+      const size = 2 + Math.random() * 2.5;
+      s.style.left = left + 'vw';
+      s.style.bottom = '-10vh';
+      s.style.animationDelay = `${delay}s`;
+      s.style.animationDuration = `${dur}s`;
+      s.style.width = s.style.height = size + 'px';
+      stars.appendChild(s);
+    }
+    const card = document.getElementById('card');
+    const openBtn = document.getElementById('openBtn');
+    const themeBtn = document.getElementById('themeBtn');
+    const shareBtn = document.getElementById('shareBtn');
+    const musicBtn = document.getElementById('musicBtn');
+    const bgm = document.getElementById('bgm');
+    let desiredVolume = 0.5;
+
+    function updateMusicBtn(){
+      if (!musicBtn || !bgm) return;
+      musicBtn.textContent = (!bgm.paused && bgm.volume > 0.02) ? '⏸ Музыка' : '🎵 Музыка';
+    }
+
+    function fadeTo(audio, target = 0, ms = 500){
+      return new Promise(resolve => {
+        const steps = 30; const dt = ms/steps; const diff = target - audio.volume; let i = 0;
+        const id = setInterval(()=>{
+          i++; audio.volume = Math.max(0, Math.min(1, audio.volume + diff/steps));
+          if (i >= steps) { clearInterval(id); audio.volume = target; resolve(); }
+        }, dt);
+      });
+    }
+
+    if (bgm) { bgm.volume = 0; bgm.addEventListener('ended', updateMusicBtn); }
+
+    if (openBtn && bgm) {
+      openBtn.addEventListener('click', () => {
+        if (bgm.paused) {
+          bgm.volume = 0;
+          bgm.play().then(() => fadeTo(bgm, desiredVolume, 800).then(updateMusicBtn)).catch(() => {});
+        }
+      });
+    }
+    if (musicBtn && bgm) {
+      musicBtn.addEventListener('click', async () => {
+        try {
+          if (bgm.paused || bgm.volume < 0.05) {
+            await bgm.play();
+            await fadeTo(bgm, desiredVolume, 400);
+          } else {
+            await fadeTo(bgm, 0, 300); bgm.pause();
+          }
+        } catch (e) {  }
+        updateMusicBtn();
+      });
+    }
+
+    document.addEventListener('visibilitychange', async () => {
+      if (!bgm) return;
+      if (document.hidden && !bgm.paused) { await fadeTo(bgm, 0, 300); bgm.pause(); updateMusicBtn(); }
+    });
+
+    updateMusicBtn();
+    let opened = false;
+    card.addEventListener('mousemove', (e) => {
+      if (opened) return;
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const rx = ((y / rect.height) - 0.5) * -8;
+      const ry = ((x / rect.width) - 0.5) * 12;  
+      card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+    });
+    card.addEventListener('mouseleave', () => { if (!opened) card.style.transform = 'rotateX(0) rotateY(0)'; });
+
+    openBtn.addEventListener('click', () => {
+      opened = true;
+      card.classList.add('revealed');
+      confettiBurst();
+      setTimeout(() => card.classList.add('open'), 250);
+    });
+
+    themeBtn.addEventListener('click', () => {
+      document.body.classList.toggle('light');
+    });
+
+    shareBtn.addEventListener('click', async () => {
+      const data = { title: document.title, text: 'Для тебя — маленькая открытка ✨', url: location.href };
+      try {
+        if (navigator.share) { await navigator.share(data); }
+        else { await navigator.clipboard.writeText(location.href); alert('Ссылка скопирована в буфер обмена!'); }
+      } catch (e) { console.log(e); }
+    });
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+    let W, H; const DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    function resize() { W = canvas.width = innerWidth * DPR; H = canvas.height = innerHeight * DPR; }
+    addEventListener('resize', resize); resize();
+
+    const pieces = [];
+    function confettiBurst() {
+      pieces.length = 0;
+      for (let i = 0; i < 180; i++) {
+        pieces.push({
+          x: Math.random() * W, y: -20 * DPR, r: 4 + Math.random() * 6,
+          c: `hsl(${Math.random()*360},90%,60%)`,
+          vx: -2 + Math.random() * 4, vy: 2 + Math.random() * 3,
+          a: Math.random() * Math.PI, s: 0.02 + Math.random()*0.06,
+        });
+      }
+      animate();
+      setTimeout(() => cancelAnimationFrame(raf), 1600);
+    }
+
+    let raf; function animate() {
+      ctx.clearRect(0, 0, W, H);
+      pieces.forEach(p => {
+        p.x += p.vx * DPR; p.y += p.vy * DPR; p.a += p.s;
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a);
+        ctx.fillStyle = p.c; ctx.fillRect(-p.r, -p.r/2, p.r*2, p.r);
+        ctx.restore();
+      });
+      raf = requestAnimationFrame(animate);
+    }
+
+    if (location.hash === '#open') setTimeout(() => openBtn.click(), 600);
+  </script>
+</body>
+</html>
